@@ -40,6 +40,7 @@ def create_flowy_playlist():
 
     current_playlists = sp.current_user_playlists()['items']
     test_playlist_id = None
+    liked_playlist_id = None
 
     print("Current playlists:") #debugging
     for playlist in current_playlists:
@@ -48,18 +49,32 @@ def create_flowy_playlist():
     for playlist in current_playlists:  # Searches for input playlist named "Test"
         if(playlist['name'] == 'Test'):
             test_playlist_id = playlist['id']
-        
+    
+    for playlist in current_playlists:  # Searches for Liked Songs playlist
+        if(playlist['name'] == 'Liked Songs'):
+            test_playlist_id = playlist['id']
+
     if not test_playlist_id: 
         return "Test playlist was not found"
     
+    if not liked_playlist_id: 
+        return "Liked Songs playlist was not found"
+    
      # Get features for each song in the "Test" playlist
     test_playlist = sp.playlist_items(test_playlist_id)
+    liked_songs_playlist = sp.playlist_items(liked_playlist_id)
     song_features = []
     for song in test_playlist['items']:
         track_id = song['track']['id']
         features = sp.audio_features(track_id)
         if features:
             song_features.append(features[0])
+    for song in liked_songs_playlist['items']:
+        track_id = song['track']['id']
+        features = sp.audio_features(track_id)
+        if features:
+            song_features.append(features[0])
+
     
     song_features.sort(key=lambda x: x['danceability'], reverse=True) #playlist ordered by danceability
 
