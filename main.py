@@ -61,6 +61,19 @@ def create_flowy_playlist():
         if features:
             song_features.append(features[0])
     
+    song_features.sort(key=lambda x: x['danceability'], reverse=True) #playlist ordered by danceability
+
+    # Create a new playlist with the ordered songs
+    new_playlist_name = "Flowy Playlist"
+    new_playlist_description = "A playlist with flowy songs"
+    new_playlist = sp.user_playlist_create(user_id, new_playlist_name, public=True, description=new_playlist_description)
+    
+    # Add ordered songs to the new playlist
+    song_uris = [f['uri'] for f in song_features]
+    sp.user_playlist_add_tracks(user_id, new_playlist['id'], song_uris)
+
+    return "Flowy playlist created successfully"
+
     
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
@@ -84,8 +97,7 @@ def create_spotify_oauth(): #add your own clientid and secret in a separate file
         client_id=client_id,
         client_secret=client_secret,
         redirect_uri=url_for('redirect_page', _external=True),
-        scope='user-library-read playlist-modify-public playlist-modify-private playlist-read-private audio-features'
+        scope='user-library-read playlist-modify-public playlist-modify-private playlist-read-private'
     )
-
 
 app.run(debug=True)
